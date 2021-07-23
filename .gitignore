@@ -37,3 +37,14 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# XML DATA and other archives
+
+*.xml
+*.zip
+
+*.unl
+
+#env data
+
+*.RData
