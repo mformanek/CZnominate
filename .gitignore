@@ -45,4 +45,4 @@ vignettes/*.pdf
 *.unl
 
 #keep my profile setting for RStudio
-!.Rprofile
+#!.Rprofile
