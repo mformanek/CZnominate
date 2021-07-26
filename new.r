@@ -32,10 +32,6 @@ print(paste("Pocet Senatoru:",ps))
 
 for(i_s in 1:ps)
 {
-  club<-xpathSApply(raw_xml2, 
-                    paste("/hlasovaniSenatu/hlasovaniSenatora[",i_s,"]"), 
-                    xmlGetAttr, 
-                    "jmenoSenatora")
   name<-xpathSApply(raw_xml2, 
                     paste("/hlasovaniSenatu/hlasovaniSenatora[",i_s,"]"), 
                     xmlGetAttr, 
@@ -79,38 +75,34 @@ for(i_s in 1:ps)
       master_table<-temp #Create first row of master table
       first_row_id<-id #save senator id for later to rename
       senator_names<-name #save senator name to list
+      
+      #create senator_legData metadata table
+      senator_party<-"placeholder" #Create first row of senator_legData table
     }
     else{ # if master_table already exists
       master_table <- rbind(master_table, temp) #add new row  
       rownames(master_table)[rownames(master_table) == "temp"] = id #rename row to match senator id
       senator_names<-c(senator_names,name) #save senator name to list
+      senator_party<-c(senator_party,"placeholder") #save senator party to list
     }
   }
 }
 #rename first row to match senator id
 rownames(master_table)[rownames(master_table) == "master_table"] = first_row_id 
 
+#format Senator names and parties from list to matrix
+senatori_legData<-matrix(senator_party)
+rownames(senatori_legData)<-senator_id
+#cleanup Enviroment
+rm(col.num,first_row_id,i_s,id,name,ps,senator_id,senator_party,temp,temp_miss,vote_id,temp_m,all_votes, file_path, raw_xml2)
+
+###END MASTER TABLE GENERATION###
+
 #WNominate section
-UN<-hotovo
-UN$V1<-NULL
 
-#UNnames<-UN$V3.y
-UNnames<-senator_id
+rc2 <- rollcall(master_table, yea = "1", nay = "2", missing = c("0"), legis.names = senator_names,  legis.data = senatori_legData, desc = "TEST")
 
-UN$V3.y<-NULL
-legData <-UN$V3.x
-#legData<-rename(legData, c("V3.x"="party"))
-
-legData <- matrix(UN[,1], length(UN[, 1]), 1)  
-colnames(legData) <- "party"
-
-UN$V3.x<-NULL
-
-UN[is.na(UN)] <- 0
-
-rc <- rollcall(UN, yea = "1", nay = "2", missing = c("0"), legis.names = senator_names,  legis.data = legData, desc = "TEST")
-
-result <- wnominate(rc, polarity = c(1, 1))
+result <- wnominate(rc, minvotes = 1, polarity = c(1, 1),verbose = TRUE)
 
 #Plotting section
 
