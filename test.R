@@ -189,3 +189,38 @@ require(plyr)
 ?rbind.fill
 
 a_test<-rbind(m1,as.temp)
+
+# 1.  funkční období 18.12.1996 - 15.12.1998
+# 2.  funkční období 16.12.1998 - 18.12.2000
+# 3.  funkční období 19.12.2000 - 03.12.2002
+# 4.  funkční období 04.12.2002 - 14.12.2004
+# 5.  funkční období 15.12.2004 - 28.11.2006
+# 6.  funkční období 29.11.2006 - 25.11.2008
+# 7.  funkční období 26.11.2008 - 23.11.2010
+# 8.  funkční období 24.11.2010 - 20.11.2012
+# 9.  funkční období 21.11.2012 - 18.11.2014
+# 10. funkční období 19.11.2014 - 15.11.2016
+# 11. funkční období 16.11.2016 - 13.11.2018
+# 12. funkční období 14.11.2018 - 10.11.2020
+# 13. funkční období 11.11.2020 - do dnes   
+
+require(XML)
+
+
+download.file("https://senat.cz/senatori/index.php?par_3=243", destfile="index.php")
+download.file("https://senat.cz/senatori/index.php?lng=cz&ke_dni=27.7.2021&O=13&par_2=1", destfile="index.php")
+temp_x <- htmlParse("https://senat.cz/senatori/index.php?lng=cz&ke_dni=27.7.2021&O=13&par_2=1")
+
+
+
+require(xml2)
+test<-read_html("https://senat.cz/senatori/index.php?lng=cz&ke_dni=27.7.2021&O=13&par_2=1") #get Senator info page
+
+party<-xml_text(xml_find_all(test, ".//tr/td[4]")) #parse out senator party names.
+names<-xml_text(xml_find_all(test, ".//tr/td[2]")) #parse out senator names.
+
+
+data<-xml_text(xml_find_all(test, ".//tr/td[2]/a/@href")) #get link <a> text field containing Senator ID
+data2<-sapply(strsplit(data, "&", fixed = FALSE, perl = FALSE, useBytes = FALSE),"[",4) #get par_3=XXX text field
+data3<-sapply(strsplit(data2, "=", fixed = FALSE, perl = FALSE, useBytes = FALSE),"[",2) #get Senator ID text field
+metx<-matrix(c(data3,party,names), ncol=3)
