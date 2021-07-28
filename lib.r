@@ -89,3 +89,19 @@ vsechny_hlasy <- function(raw_xml) {
                                               sep = '_')))
   return(vsechna_hlasovani)
 }
+#get list of senators for one funkcni obdobi from a valid url
+#XML2 implementation
+senators_from_url <- function(url) {
+  
+  require(xml2)
+  test<-read_html(url) #get Senator info page
+  
+  party<-xml_text(xml_find_all(test, ".//tr/td[4]")) #parse out senator party names.
+  names<-xml_text(xml_find_all(test, ".//tr/td[2]")) #parse out senator names.
+  data<-xml_text(xml_find_all(test, ".//tr/td[2]/a/@href")) #get link <a> text field containing Senator ID
+  data2<-sapply(strsplit(data, "&", fixed = FALSE, perl = FALSE, useBytes = FALSE),"[",4) #get par_3=XXX text field
+  data3<-sapply(strsplit(data2, "=", fixed = FALSE, perl = FALSE, useBytes = FALSE),"[",2) #get Senator ID text field
+  metx<-matrix(c(data3,party,names), ncol=3)
+  
+  return(metx)
+}

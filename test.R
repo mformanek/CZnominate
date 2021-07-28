@@ -211,15 +211,47 @@ download.file("https://senat.cz/senatori/index.php?par_3=243", destfile="index.p
 download.file("https://senat.cz/senatori/index.php?lng=cz&ke_dni=27.7.2021&O=13&par_2=1", destfile="index.php")
 temp_x <- htmlParse("https://senat.cz/senatori/index.php?lng=cz&ke_dni=27.7.2021&O=13&par_2=1")
 
-
-
 require(xml2)
-test<-read_html("https://senat.cz/senatori/index.php?lng=cz&ke_dni=27.7.2021&O=13&par_2=1") #get Senator info page
+source("lib.R")
+
+#get amount of funcni obdobi
+pocet_obdobi<-(as.integer(format(Sys.Date(), "%Y"))-1996)/2
+pocet_obdobi<-ceiling(pocet_obdobi)
+funkcni_obdobi<-c(1:pocet_obdobi)
+# get rolover dates for funkcni obdobi, anticipate this will break in 2023
+dates<-c("15.12.1998",
+         "18.12.2000",
+         "03.12.2002",
+         "14.12.2004", 
+         "28.11.2006", 
+         "25.11.2008", 
+         "23.11.2010", 
+         "20.11.2012", 
+         "18.11.2014",
+         "15.11.2016",
+         "13.11.2018",
+         "10.11.2020",
+         format(Sys.Date(), "%d.%m.%Y"))
+url1<-"https://senat.cz/senatori/index.php?lng=cz&ke_dni="
+url2<-"&O="
+url3<-"&par_2=1"
+
+usable_urls<-paste0(url1,dates,url2,funkcni_obdobi,url3)
+for(val in 1:pocet_obdobi) {
+  if(!exists("single_table")) {
+    single_table<-senators_from_url(usable_urls[val]) #get Senator info page
+  } else {
+    single_table2<-senators_from_url(usable_urls[val]) #get Senator info page
+    single_table<-rbind(single_table,single_table2)
+  }
+}
+single_table<-single_table[!duplicated(single_table[,1]),] #remove duplicates
+rownames(single_table)<-single_table[,1]
+single_table<-single_table[order(single_table[,1]),]
+single_table<-sort(single_table)
 
 party<-xml_text(xml_find_all(test, ".//tr/td[4]")) #parse out senator party names.
 names<-xml_text(xml_find_all(test, ".//tr/td[2]")) #parse out senator names.
-
-
 data<-xml_text(xml_find_all(test, ".//tr/td[2]/a/@href")) #get link <a> text field containing Senator ID
 data2<-sapply(strsplit(data, "&", fixed = FALSE, perl = FALSE, useBytes = FALSE),"[",4) #get par_3=XXX text field
 data3<-sapply(strsplit(data2, "=", fixed = FALSE, perl = FALSE, useBytes = FALSE),"[",2) #get Senator ID text field
