@@ -247,8 +247,8 @@ for(val in 1:pocet_obdobi) {
 }
 single_table<-single_table[!duplicated(single_table[,1]),] #remove duplicates
 rownames(single_table)<-single_table[,1]
-single_table<-single_table[order(single_table[,1]),]
-single_table<-sort(single_table)
+single_table<-single_table[order(as.numeric(rownames(single_table))),,drop=FALSE]#oreder table by index
+
 
 party<-xml_text(xml_find_all(test, ".//tr/td[4]")) #parse out senator party names.
 names<-xml_text(xml_find_all(test, ".//tr/td[2]")) #parse out senator names.

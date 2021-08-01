@@ -4,13 +4,14 @@ library(magrittr) # needs to be run every time you start R and want to use %>%
 library(dplyr)    # alternatively, this also loads %>%
 library(gtools)
 library(wrapr)
+library(wnominate)
 
 source("xml_to_df.R")
 source("lib.R")
 
 #string as variable macros
 read_str_as_var <- defmacro(a,expr={eval(parse(text = a))})
-  #write_str_as_var <- defmacro(b,c,expr={assign(b,c)})
+#write_str_as_var <- defmacro(b,c,expr={assign(b,c)})
 
 #define input .xml file:
 file_path<-"senat_04.06.2021.xml"
@@ -23,6 +24,9 @@ senator_id<-mixedsort(unlist(senator_id[1,]))
 vote_id<-read.csv("Hlasy.csv", header=FALSE, sep=',', stringsAsFactors=FALSE, fileEncoding="UTF-8-BOM")
 vote_id<-mixedsort(unlist(vote_id[1,]))
 #senator_master_table<-allocate_senator_master_table(file_path)
+
+#get table containing all the Senators with Party info
+senator_party_table<-get_Senator_table()
 
 raw_xml2 <- xmlParse(file_path)
 
@@ -77,13 +81,13 @@ for(i_s in 1:ps)
       senator_names<-name #save senator name to list
       
       #create senator_legData metadata table
-      senator_party<-"placeholder" #Create first row of senator_legData table
+      senator_party<-senator_party_table$V2[as.numeric(id)] #Create first row of senator_legData table
     }
     else{ # if master_table already exists
       master_table <- rbind(master_table, temp) #add new row  
       rownames(master_table)[rownames(master_table) == "temp"] = id #rename row to match senator id
       senator_names<-c(senator_names,name) #save senator name to list
-      senator_party<-c(senator_party,"placeholder") #save senator party to list
+      senator_party<-c(senator_party,senator_party_table$V2[as.numeric(id)]) #save senator party to list
     }
   }
 }
@@ -93,8 +97,17 @@ rownames(master_table)[rownames(master_table) == "master_table"] = first_row_id
 #format Senator names and parties from list to matrix
 senatori_legData<-matrix(senator_party)
 rownames(senatori_legData)<-senator_id
+
+master_table<-as.data.frame(master_table)
+senatori_legData<-as.data.frame(senatori_legData) #reformat to data frame
+row.names(master_table) <- 1:nrow(master_table)
+row.names(senatori_legData) <- 1:nrow(senatori_legData) #renumber rows
+colnames(senatori_legData) <- "party"  #rename column to party
+colnames(master_table) <- 1:ncol(master_table) #renumber columns 
+
+
 #cleanup Enviroment
-rm(col.num,first_row_id,i_s,id,name,ps,senator_id,senator_party,temp,temp_miss,vote_id,temp_m,all_votes, file_path, raw_xml2)
+rm(col.num,first_row_id,i_s,id,name,ps,senator_id,senator_party,temp,temp_miss,vote_id,temp_m,all_votes, file_path, raw_xml2,senator_party_table)
 
 ###END MASTER TABLE GENERATION###
 
@@ -102,7 +115,8 @@ rm(col.num,first_row_id,i_s,id,name,ps,senator_id,senator_party,temp,temp_miss,v
 
 rc2 <- rollcall(master_table, yea = "1", nay = "2", missing = c("0"), legis.names = senator_names,  legis.data = senatori_legData, desc = "TEST")
 
-result <- wnominate(rc, minvotes = 1, polarity = c(1, 1),verbose = TRUE)
+#result <- wnominate(rc2, minvotes = 1, polarity = c(1, 1),verbose = TRUE)
+result <- wnominate(rc2, polarity = c(1, 1))
 
 #Plotting section
 

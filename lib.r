@@ -89,11 +89,12 @@ vsechny_hlasy <- function(raw_xml) {
                                               sep = '_')))
   return(vsechna_hlasovani)
 }
+
 #get list of senators for one funkcni obdobi from a valid url
 #XML2 implementation
 senators_from_url <- function(url) {
   
-  require(xml2)
+  #require(xml2)
   test<-read_html(url) #get Senator info page
   
   party<-xml_text(xml_find_all(test, ".//tr/td[4]")) #parse out senator party names.
@@ -104,4 +105,49 @@ senators_from_url <- function(url) {
   metx<-matrix(c(data3,party,names), ncol=3)
   
   return(metx)
+}
+
+#get list of senators for one funkcni obdobi from a valid url
+#XML2 implementation
+get_Senator_table <- function() {
+  
+  #require(xml2)
+  #source("lib.R")
+  
+  #get amount of funcni obdobi
+  pocet_obdobi<-(as.integer(format(Sys.Date(), "%Y"))-1996)/2
+  pocet_obdobi<-ceiling(pocet_obdobi)
+  funkcni_obdobi<-c(1:pocet_obdobi)
+  # get rolover dates for funkcni obdobi, anticipate this will break in 2023
+  dates<-c("15.12.1998",
+           "18.12.2000",
+           "03.12.2002",
+           "14.12.2004", 
+           "28.11.2006", 
+           "25.11.2008", 
+           "23.11.2010", 
+           "20.11.2012", 
+           "18.11.2014",
+           "15.11.2016",
+           "13.11.2018",
+           "10.11.2020",
+           format(Sys.Date(), "%d.%m.%Y"))
+  url1<-"https://senat.cz/senatori/index.php?lng=cz&ke_dni="
+  url2<-"&O="
+  url3<-"&par_2=1"
+  
+  usable_urls<-paste0(url1,dates,url2,funkcni_obdobi,url3)
+  for(val in 1:pocet_obdobi) {
+    if(!exists("single_table")) {
+      single_table<-senators_from_url(usable_urls[val]) #get Senator info page
+    } else {
+      single_table2<-senators_from_url(usable_urls[val]) #get Senator info page
+      single_table<-rbind(single_table,single_table2)
+    }
+  }
+  single_table<-single_table[!duplicated(single_table[,1]),] #remove duplicates
+  rownames(single_table)<-single_table[,1]
+  single_table<-single_table[order(as.numeric(rownames(single_table))),,drop=FALSE]#oreder table by index
+  
+  return(as.data.frame(single_table))
 }
