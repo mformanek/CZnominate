@@ -104,7 +104,7 @@ row.names(master_table) <- 1:nrow(master_table)
 row.names(senatori_legData) <- 1:nrow(senatori_legData) #renumber rows
 colnames(senatori_legData) <- "party"  #rename column to party
 colnames(master_table) <- 1:ncol(master_table) #renumber columns 
-
+senatori_legData<-data.matrix(senatori_legData)
 
 #cleanup Enviroment
 rm(col.num,first_row_id,i_s,id,name,ps,senator_id,senator_party,temp,temp_miss,vote_id,temp_m,all_votes, file_path, raw_xml2,senator_party_table)
