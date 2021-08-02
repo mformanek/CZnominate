@@ -5,6 +5,7 @@ library(dplyr)    # alternatively, this also loads %>%
 library(gtools)
 library(wrapr)
 library(wnominate)
+library(plotly)
 
 source("xml_to_df.R")
 source("lib.R")
@@ -104,7 +105,8 @@ row.names(master_table) <- 1:nrow(master_table)
 row.names(senatori_legData) <- 1:nrow(senatori_legData) #renumber rows
 colnames(senatori_legData) <- "party"  #rename column to party
 colnames(master_table) <- 1:ncol(master_table) #renumber columns 
-senatori_legData<-data.matrix(senatori_legData)
+
+#senatori_legData<-data.matrix(senatori_legData)
 
 #cleanup Enviroment
 rm(col.num,first_row_id,i_s,id,name,ps,senator_id,senator_party,temp,temp_miss,vote_id,temp_m,all_votes, file_path, raw_xml2,senator_party_table)
@@ -113,16 +115,16 @@ rm(col.num,first_row_id,i_s,id,name,ps,senator_id,senator_party,temp,temp_miss,v
 
 #WNominate section
 
-rc2 <- rollcall(master_table, yea = "1", nay = "2", missing = c("0"), legis.names = senator_names,  legis.data = senatori_legData, desc = "TEST")
+rc2 <- rollcall(master_table, yea = '1', nay = '2', missing = '0', legis.names = senator_names,  legis.data = as.matrix(senatori_legData), desc = "TEST")
 
 #result <- wnominate(rc2, minvotes = 1, polarity = c(1, 1),verbose = TRUE)
-result <- wnominate(rc2, polarity = c(1, 1))
+result <- wnominate(rc2, dims=2, minvotes= 10, polarity = c(20, 20))
 
 #Plotting section
 
 #plot.coords(result) 
 options(encoding = "Windows-1250")
 
-pal <- c("brown", "orange", "#106F2B", "red", "blue", "purple", "#FF00DA" )
-p <- plot_ly( hoverinfo ="text" , text = ~paste(UNnames), symbol = I("square"), y = result$legislators$coord1D, x = -(result$legislators$coord2D), type = 'scatter', colors = pal, color = result$legislators$party, mode = 'markers')
+pal <- c("brown", "orange", "#106F2B", "red", "blue", "purple", "#FF00DA", "black" )
+p <- plot_ly( hoverinfo ="text" , text = ~paste(senator_names), symbol = I("square"), y = result$legislators$coord1D, x = -(result$legislators$coord2D), type = 'scatter', colors = pal, color = result$legislators$party, mode = 'markers')
 p
