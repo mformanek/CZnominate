@@ -1,7 +1,12 @@
-#Download and decode vote ID's for chamber of deputies
+require(reshape2)
+
+
+dcast#Download and decode vote ID's for chamber of deputies
 download.file("https://www.psp.cz/eknih/cdrom/opendata/hl-2017ps.zip", destfile="hlasovani_2017.zip") #download file with votes
 unzip(zipfile="hlasovani_2017.zip", exdir = "./hlasovani_2017",) #unzip file
-hl_hlasovani<-read.table("./hlasovani_2017/hl2017s.unl",sep = "|", fileEncoding = "Windows-1250") #decode hl_hlasovani table
+
+#decode hl_hlasovani table
+hl_hlasovani<-read.table("./hlasovani_2017/hl2017s.unl",sep = "|", fileEncoding = "Windows-1250") 
 hl_hlasovani <- hl_hlasovani[c(1:17)] #remove extra cols
 
 #rename cols to match https://www.psp.cz/sqw/hp.sqw?k=1302
@@ -22,6 +27,19 @@ colnames(hl_hlasovani)<-c("id_hlasovani",
                           "druh_hlasovani",
                           "nazev_dlouhy",
                           "nazev_kratky")
+
+#decode hl_poslanec table
+hl_poslanec<-read.table("./hlasovani_2017/hl2017h1.unl",sep = "|", fileEncoding = "Windows-1250") 
+hl_poslanec <- hl_poslanec[c(1:3)] #remove extra cols
+
+#rename cols to match https://www.psp.cz/sqw/hp.sqw?k=1302
+colnames(hl_poslanec)<-c("id_poslanec",
+                          "id_hlasovani",
+                          "vysledek")
+
+#change format to wide
+hl_poslanec_wide <- dcast(hl_poslanec, id_poslanec ~ id_hlasovani, value.var="vysledek",drop = FALSE)
+
 
 #download voter info
 download.file("https://www.psp.cz/eknih/cdrom/opendata/poslanci.zip", destfile="poslanci.zip") #download file with all voters
@@ -60,3 +78,43 @@ colnames(poslanec)<-c("id_poslanec",
                       "facebook",
                       "foto")
 
+#decode organy table
+organy<-read.table("./poslanci/organy.unl",sep = "|", fileEncoding = "Windows-1250") 
+organy <- organy[c(1:10)] #remove extra cols
+
+#rename cols to match https://www.psp.cz/sqw/hp.sqw?k=1301
+colnames(organy)<-c("id_organ",
+                      "organ_id_organ",
+                      "id_typ_organu",
+                      "zkratka",
+                      "nazev_organu_cz",
+                      "nazev_organu_en",
+                      "od_organ",
+                      "do_organ",
+                      "priorita",
+                      "cl_organ_base")
+
+#decode  zarazeni table
+zarazeni<-read.table("./poslanci/zarazeni.unl",sep = "|", fileEncoding = "Windows-1250") 
+zarazeni <- zarazeni[c(1:7)] #remove extra cols
+
+#rename cols to match https://www.psp.cz/sqw/hp.sqw?k=1301
+colnames(zarazeni)<-c("id_osoba",
+                      "id_of",
+                      "cl_funkce",
+                      "od_o",
+                      "do_o",
+                      "od_f",
+                      "do_f")
+
+#decode  typ_organu table
+typ_organu<-read.table("./poslanci/typ_organu.unl",sep = "|", fileEncoding = "Windows-1250") 
+typ_organu <- typ_organu[c(1:6)] #remove extra cols
+
+#rename cols to match https://www.psp.cz/sqw/hp.sqw?k=1301
+colnames(typ_organu)<-c("id_typ_org",
+                      "typ_id_typ_org",
+                      "nazev_typ_org_cz",
+                      "nazev_typ_org_en",
+                      "typ_org_obecny",
+                      "priorita")
