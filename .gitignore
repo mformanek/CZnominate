@@ -43,6 +43,6 @@ vignettes/*.pdf
 *.xml
 *.zip
 *.unl
-
+*.html
 #keep my profile setting for RStudio
 #!.Rprofile
