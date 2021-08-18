@@ -107,11 +107,11 @@ senators_from_url <- function(url) {
   return(metx)
 }
 
-#get list of senators for one funkcni obdobi from a valid url
+#get list of senators for all funkcni obdobi from a valid url
 #XML2 implementation
 get_Senator_table <- function() {
   
-  #require(xml2)
+  require(xml2)
   #source("lib.R")
   
   #get amount of funcni obdobi
@@ -151,3 +151,60 @@ get_Senator_table <- function() {
   
   return(as.data.frame(single_table))
 }
+
+#get list of senators for one funkcni obdobi from a valid url
+#XML2 implementation
+get_Senator_table_single <- function(funkcni_obdobi) {
+  
+  require(xml2)
+  #source("lib.R")
+
+  # get rolover dates for funkcni obdobi, anticipate this will break in 2023
+  dates<-c("15.12.1998",
+           "18.12.2000",
+           "03.12.2002",
+           "14.12.2004", 
+           "28.11.2006", 
+           "25.11.2008", 
+           "23.11.2010", 
+           "20.11.2012", 
+           "18.11.2014",
+           "15.11.2016",
+           "13.11.2018",
+           "10.11.2020",
+           format(Sys.Date(), "%d.%m.%Y"))
+  url1<-"https://senat.cz/senatori/index.php?lng=cz&ke_dni="
+  url2<-"&O="
+  url3<-"&par_2=1"
+  
+  usable_url<-paste0(url1,dates[funkcni_obdobi],url2,funkcni_obdobi,url3)
+  single_table<-senators_from_url(usable_url) #get Senator info page
+
+  single_table<-single_table[!duplicated(single_table[,1]),] #remove duplicates
+  rownames(single_table)<-single_table[,1]
+  single_table<-single_table[order(as.numeric(rownames(single_table))),,drop=FALSE] #order table by index
+  
+  return(as.data.frame(single_table))
+}
+
+#input Senators from .csv file
+load_senators_csv<-function(dir) {
+  
+  library(gtools)
+  #load Senatori.csv list of senator IDs:
+  senator_id<-read.csv(dir, header=FALSE, sep=',', stringsAsFactors=FALSE, fileEncoding="UTF-8-BOM")
+  senator_id<-mixedsort(unlist(senator_id[1,]))
+
+  return(senator_id)
+}  
+
+#input Votes from .csv file
+load_votes_csv<-function(dir) {
+  
+  library(gtools)
+  #load Hlasy.csv list of vote IDs:
+  vote_id<-read.csv(dir, header=FALSE, sep=',', stringsAsFactors=FALSE, fileEncoding="UTF-8-BOM")
+  vote_id<-mixedsort(unlist(vote_id[1,]))
+  
+  return(vote_id)
+}  

@@ -1,11 +1,8 @@
+#Glue lib
 
-
-pair_votes<-function() {
-  library(tcltk)
-  setwd('~')
-  getwd()
-  # [1] "C:/Users/Root/Documents"
-  dir <- tclvalue(tkchooseDirectory())  # opens a dialog window in 'My Documents'
+#return vote pairs from vote files directory
+pair_votes<-function(dir) {
+  
   files <- list.files(path = dir, pattern = NULL, all.files = FALSE,
                       full.names = FALSE, recursive = FALSE,
                       ignore.case = FALSE, include.dirs = FALSE, no.. = FALSE)

@@ -1,4 +1,4 @@
-#Helper Function for Poslanci
+#Helper Functions for Poslanci
 #Milan Formanek 2021
 
 require(reshape2)

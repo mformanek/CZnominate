@@ -10,7 +10,6 @@ library(plotly)
 source("xml_to_df.r")
 source("lib.r")
 source("poslanec_lib.r")
-source("glue_lib.r")
 
 #string as variable macros
 read_str_as_var <- defmacro(a,expr={eval(parse(text = a))})
