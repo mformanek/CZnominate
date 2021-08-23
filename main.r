@@ -14,7 +14,7 @@ source("lib.r")
 source("xml_to_df.r")
 
 #define input .xml file:
-file_path<-"senat_04.06.2021.xml"
+file_path<-"senat_23.08.2021.xml"
 
 #Prompt user to select directory with vote pair files
 getwd()
@@ -108,10 +108,10 @@ rownames(senatori_legData)<-senator_id
 
 master_table<-as.data.frame(master_table)
 senatori_legData<-as.data.frame(senatori_legData) #reformat to data frame
-row.names(master_table) <- 1:nrow(master_table)
-row.names(senatori_legData) <- 1:nrow(senatori_legData) #renumber rows
-colnames(senatori_legData) <- "party"  #rename column to party
-colnames(master_table) <- 1:ncol(master_table) #renumber columns 
+#row.names(master_table) <- 1:nrow(master_table)
+#row.names(senatori_legData) <- 1:nrow(senatori_legData) #renumber rows
+#colnames(senatori_legData) <- "party"  #rename column to party
+#colnames(master_table) <- 1:ncol(master_table) #renumber columns 
 
 #senatori_legData<-data.matrix(senatori_legData)
 
