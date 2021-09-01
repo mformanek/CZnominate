@@ -21,13 +21,13 @@ getwd()
 # [1] "C:/Users/Root/Documents"
 dir <- tclvalue(tkchooseDirectory())  # opens a dialog window in 'My Documents'
 
-pairs<-pair_votes(dir) #pair vote from 
+pairs<-pair_votes(dir) #pair vote from file names
 
-senator_id<-get_Senator_table_single(pairs[[3]])[1] #get Senator ID's for the correct period
+senator_id<-get_Senator_table_single(pairs[[4]])[1] #get Senator ID's for the correct period
 senator_id<-as.data.frame(t(senator_id))
 senator_id<-mixedsort(unlist(senator_id[1,]))
 
-vote_id<-pairs[[1]]
+vote_id<-pairs[[2]]
 vote_id<-as.data.frame(t(vote_id))
 vote_id<-mixedsort(unlist(vote_id[1,]))
 
@@ -116,7 +116,7 @@ senatori_legData<-as.data.frame(senatori_legData) #reformat to data frame
 #senatori_legData<-data.matrix(senatori_legData)
 
 #cleanup Enviroment
-rm(col.num,first_row_id,i_s,id,name,ps,senator_id,senator_party,temp,temp_miss,vote_id,temp_m,all_votes, file_path, raw_xml2,senator_party_table)
+#rm(col.num,first_row_id,i_s,id,name,ps,senator_id,senator_party,temp,temp_miss,vote_id,temp_m,all_votes, file_path, raw_xml2,senator_party_table)
 
 ###END MASTER TABLE GENERATION###
 
@@ -125,7 +125,7 @@ rm(col.num,first_row_id,i_s,id,name,ps,senator_id,senator_party,temp,temp_miss,v
 rc2 <- rollcall(master_table, yea = '1', nay = '2', missing = '0', legis.names = senator_names,  legis.data = as.matrix(senatori_legData), desc = "TEST")
 
 #result <- wnominate(rc2, minvotes = 1, polarity = c(1, 1),verbose = TRUE)
-result <- wnominate(rc2, dims=2, minvotes= 10, polarity = c(20, 20))
+result <- wnominate(rc2, dims=2, minvotes= 10, polarity = c(2, 2))
 
 #Plotting section
 
@@ -133,5 +133,5 @@ result <- wnominate(rc2, dims=2, minvotes= 10, polarity = c(20, 20))
 options(encoding = "Windows-1250")
 
 pal <- c("brown", "orange", "#106F2B", "red", "blue", "purple", "#FF00DA", "black" )
-p <- plot_ly( hoverinfo ="text" , text = ~paste(senator_names), symbol = I("square"), y = result$legislators$coord1D, x = -(result$legislators$coord2D), type = 'scatter', colors = pal, color = result$legislators$party, mode = 'markers')
+p <- plot_ly( hoverinfo ="text" , text = ~paste(senator_names), symbol = I("square"), y = result$legislators$coord1D, x = result$legislators$coord2D, type = 'scatter', colors = pal, color = result$legislators$V1, mode = 'markers')
 p
