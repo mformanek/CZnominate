@@ -125,13 +125,13 @@ senatori_legData<-as.data.frame(senatori_legData) #reformat to data frame
 rc2 <- rollcall(master_table, yea = '1', nay = '2', missing = '0', legis.names = senator_names,  legis.data = as.matrix(senatori_legData), desc = "TEST")
 
 #result <- wnominate(rc2, minvotes = 1, polarity = c(1, 1),verbose = TRUE)
-result <- wnominate(rc2, dims=2, minvotes= 10, polarity = c(2, 2))
-
+result <- wnominate(rc2, dims=2, minvotes= 10, polarity = c(8, 7))
+#polarity Cunek, Vicha (8,7)
 #Plotting section
 
 #plot.coords(result) 
 options(encoding = "Windows-1250")
 
 pal <- c("brown", "orange", "#106F2B", "red", "blue", "purple", "#FF00DA", "black" )
-p <- plot_ly( hoverinfo ="text" , text = ~paste(senator_names), symbol = I("square"), y = result$legislators$coord1D, x = result$legislators$coord2D, type = 'scatter', colors = pal, color = result$legislators$V1, mode = 'markers')
+p <- plot_ly( hoverinfo ="text" , text = ~paste(senator_names), symbol = I("square"), y = result$legislators$coord1D, x = -(result$legislators$coord2D), type = 'scatter', colors = pal, color = result$legislators$V1, mode = 'markers')
 p
