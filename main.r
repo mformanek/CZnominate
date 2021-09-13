@@ -60,10 +60,8 @@ for(i_s in 1:ps)
   if(id %in% senator_id)
   {
     print("    ^ added Senator to master_table ^")
-    if(id==334)
-    {
-      print("flag")
-    }
+    if(id==336)    
+    {  print("flag")}
     temp<-xml_to_df(raw_xml2,
                     xpath = paste("/hlasovaniSenatu/hlasovaniSenatora[",i_s,"]/hlasSenatora"),
                     is_xml = TRUE)
@@ -81,7 +79,7 @@ for(i_s in 1:ps)
     temp_miss<-setdiff(vote_id,colnames(temp))
     temp_m <- matrix(as.character(0), ncol=length(temp_miss), nrow=2, dimnames = list(rownames(temp),temp_miss))
     temp<-cbind(temp,temp_m)
-    temp<- temp[,vote_id] #re-order columns #current issue# wiping all data 
+    #temp2<- temp[,vote_id] #re-order columns #current issue # wiping all data 
     temp<-temp[-1,] #remove extra row
     
     #assign(paste0("senator_",id),temp) # create test table with senator id as label
