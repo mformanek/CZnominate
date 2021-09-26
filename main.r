@@ -60,8 +60,9 @@ for(i_s in 1:ps)
   if(id %in% senator_id)
   {
     print("    ^ added Senator to master_table ^")
-    if(id==336)    
-    {  print("flag")}
+    if(as.integer(id)>333)    {  
+      print("flag")
+      }
     temp<-xml_to_df(raw_xml2,
                     xpath = paste("/hlasovaniSenatu/hlasovaniSenatora[",i_s,"]/hlasSenatora"),
                     is_xml = TRUE)
@@ -73,7 +74,7 @@ for(i_s in 1:ps)
     #if votes of index is in list of selected votes create subset tables
     col.num<-which(colnames(temp) %in% vote_id)
     #temp<- temp[,sort(c(col.num, col.num - 1))]
-    temp<- temp[,col.num]
+    #temp<- temp[,col.num] #is this the issue?
     
     #add missing columns and order correctly
     temp_miss<-setdiff(vote_id,colnames(temp))
@@ -97,7 +98,7 @@ for(i_s in 1:ps)
       master_table <- rbind(master_table, temp) #add new row  
       rownames(master_table)[rownames(master_table) == "temp"] = id #rename row to match senator id
       senator_names<-c(senator_names,name) #save senator name to list
-      senator_party<-c(senator_party,senator_party_table$V2[as.numeric(id)]) #save senator party to list
+      senator_party<-c(senator_party,senator_party_table$V2[senator_party_table$V1==as.numeric(id)]) #save senator party to list
     }
   }
 }
