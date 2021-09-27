@@ -53,27 +53,41 @@ download_hlasovani<-function(volebni_obdobi) {
   #change format to wide
   hl_poslanec_wide <- dcast(hl_poslanec, id_poslanec ~ id_hlasovani, value.var="vysledek",drop = FALSE)
 
-  return(output)
+  return(hl_poslanec_wide)
 }
 
 #download voter info
-download_hlasovani<-function() {
+download_poslanci<-function() {
+  
   download.file("https://www.psp.cz/eknih/cdrom/opendata/poslanci.zip", destfile="poslanci.zip") #download file with all voters
   unzip(zipfile="poslanci.zip", exdir = "./poslanci",) #unzip file
+  
+  #decode osoby table
   osoby<-read.table("./poslanci/osoby.unl",sep = "|", fileEncoding = "Windows-1250") #decode osoby table
   osoby <- osoby[c(1:9)] #remove extra cols
   
   #rename cols to match https://www.psp.cz/sqw/hp.sqw?k=1301
   colnames(osoby)<-c("id_osoba",
                      "pred",
-                     "jmeno",
                      "prijmeni",
+                     "jmeno",
                      "za",
                      "narozeni",
                      "pohlavi",
                      "zmena",
                      "umrti")
+  #decode osoba_extra table
+  osoba_extra<-read.table("./poslanci/osoba_extra.unl",sep = "|", fileEncoding = "Windows-1250") #decode osoby table
+  osoba_extra <- osoba_extra[c(1:6)] #remove extra cols
+  #rename cols to match https://www.psp.cz/sqw/hp.sqw?k=1301
+  colnames(osoba_extra)<-c("id_osoba",
+                     "id_org",
+                     "typ",
+                     "obvod",
+                     "strana",
+                     "id_external")
   
+  #decode poslanec table
   poslanec<-read.table("./poslanci/poslanec.unl",sep = "|", fileEncoding = "Windows-1250") #decode poslanec table
   poslanec <- poslanec[c(1:15)] #remove extra cols
   
@@ -134,5 +148,6 @@ download_hlasovani<-function() {
                           "nazev_typ_org_en",
                           "typ_org_obecny",
                           "priorita")
-  return(output)
+  
+  return()
 }
