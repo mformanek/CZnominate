@@ -4,6 +4,7 @@
 #requires
 require(tcltk)
 require(gtools)
+require(tidyverse)
 
 library(wnominate)
 library(plotly)
@@ -24,11 +25,13 @@ hlasovani_test<-download_hlasovani(as.integer(pairs[[3]])) #download relevant vo
 ### Begin Nominate section 
 
 ##test code##
-poslanci_test <- merge(osoby,osoba_extra,by="id_osoba") #merge osoby table with osoba_extra to get party info
+poslanci_test <- merge(osoby,osoba_extra, by="id_osoba") #merge osoby table with osoba_extra to get party info
+poslanci_test <- merge(poslanci_test,poslanec,by="id_osoba")
 poslanci_test<-poslanci_test[c("id_osoba","jmeno","prijmeni","strana")] #delete unused info (columns)
 poslanci_test$jmeno<-paste(poslanci_test$jmeno, poslanci_test$prijmeni) # concat jmeno and prijimeni columns
-
-
+poslanci_test<-poslanci_test[!duplicated(poslanci_test),] #de-duplicate table
+rownames(poslanci_test) <- NULL #renumber rows
+poslanci_test <- merge(poslanci_test,poslanec,by="id_osoba") #merge osoby table with osoba_extra to get party info
 
 poslanci_test <- merge(osoby,poslanec,by="id_osoba")
 #organy_test<-organy[organy$id_typ_organu == "6" | organy$id_typ_organu == "1",]
