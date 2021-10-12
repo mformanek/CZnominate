@@ -5,6 +5,7 @@ require(reshape2)
 
 #Download and decode vote ID's for chamber of deputies
 download_hlasovani<-function(volebni_obdobi) {
+  require(reshape2)
   
   download_links<-c("https://www.psp.cz/eknih/cdrom/opendata/hl-1993ps.zip",
                     "https://www.psp.cz/eknih/cdrom/opendata/hl-1996ps.zip",
@@ -41,6 +42,9 @@ download_hlasovani<-function(volebni_obdobi) {
                             "nazev_dlouhy",
                             "nazev_kratky")
   
+  temp<-data.frame(hl_hlasovani$id_hlasovani,paste(volebni_obdobi, hl_hlasovani$schuze, hl_hlasovani$cislo, sep = "_"))
+  colnames(temp)<-c("id_hlasovani", "cislo_hlasovani") #normalize vote names to desired format-obdobi_schuze_hlasovani
+  
   #decode hl_poslanec table
   hl_poslanec<-read.table("./hlasovani_2017/hl2017h1.unl",sep = "|", fileEncoding = "Windows-1250") 
   hl_poslanec <- hl_poslanec[c(1:3)] #remove extra cols
@@ -49,9 +53,12 @@ download_hlasovani<-function(volebni_obdobi) {
   colnames(hl_poslanec)<-c("id_poslanec",
                            "id_hlasovani",
                            "vysledek")
+
+  hl_poslanec<-merge(hl_poslanec,temp, by = "id_hlasovani") 
+  hl_poslanec<-hl_poslanec[c("id_poslanec", "cislo_hlasovani", "vysledek")]
   
   #change format to wide
-  hl_poslanec_wide <- dcast(hl_poslanec, id_poslanec ~ id_hlasovani, value.var="vysledek",drop = FALSE)
+  hl_poslanec_wide <- dcast(hl_poslanec, id_poslanec ~ cislo_hlasovani, value.var="vysledek",drop = FALSE)
 
   return(hl_poslanec_wide)
 }
