@@ -22,9 +22,13 @@ pairs<-pair_votes(dir) #pair vote from file names
 hlasovani_test<-download_hlasovani(as.integer(pairs[[3]])) #download relevant votes
 #poslanci_test<-download_poslanci()
 
+hlasovani_test<-hlasovani_test[,c("id_poslanec",pairs[[1]])] #subset votes from directory
+
 ### Begin Nominate section 
 
 ##test code##
+download_poslanci()
+
 poslanci_test <- merge(osoby,osoba_extra, by="id_osoba") #merge osoby table with osoba_extra to get party info
 poslanci_test <- merge(poslanci_test,poslanec,by="id_osoba")
 poslanci_test<-poslanci_test[c("id_osoba","jmeno","prijmeni","strana")] #delete unused info (columns)

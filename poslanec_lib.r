@@ -83,6 +83,8 @@ download_poslanci<-function() {
                      "pohlavi",
                      "zmena",
                      "umrti")
+  osoby<<-osoby #make global
+  
   #decode osoba_extra table
   osoba_extra<-read.table("./poslanci/osoba_extra.unl",sep = "|", fileEncoding = "Windows-1250") #decode osoby table
   osoba_extra <- osoba_extra[c(1:6)] #remove extra cols
@@ -93,6 +95,7 @@ download_poslanci<-function() {
                      "obvod",
                      "strana",
                      "id_external")
+  osoba_extra<<-osoba_extra #make global
   
   #decode poslanec table
   poslanec<-read.table("./poslanci/poslanec.unl",sep = "|", fileEncoding = "Windows-1250") #decode poslanec table
@@ -114,9 +117,9 @@ download_poslanci<-function() {
                         "psp_telefon",
                         "facebook",
                         "foto")
-  
+  poslanec<<-poslanec #make global
   #decode organy table
-  organy<-read.table("./poslanci/organy.unl",sep = "|", fileEncoding = "Windows-1250") 
+  organy<-read.delim("./poslanci/organy.unl",sep = "|", fileEncoding = "Windows-1250") 
   organy <- organy[c(1:10)] #remove extra cols
   
   #rename cols to match https://www.psp.cz/sqw/hp.sqw?k=1301
@@ -130,6 +133,7 @@ download_poslanci<-function() {
                       "do_organ",
                       "priorita",
                       "cl_organ_base")
+  organy<<-organy #make global
   
   #decode  zarazeni table
   zarazeni<-read.table("./poslanci/zarazeni.unl",sep = "|", fileEncoding = "Windows-1250") 
@@ -143,10 +147,12 @@ download_poslanci<-function() {
                         "do_o",
                         "od_f",
                         "do_f")
+  zarazeni<<-zarazeni #make global
   
   #decode  typ_organu table
   typ_organu<-read.table("./poslanci/typ_organu.unl",sep = "|", fileEncoding = "Windows-1250") 
   typ_organu <- typ_organu[c(1:6)] #remove extra cols
+  typ_organu<<-typ_organu #make global
   
   #rename cols to match https://www.psp.cz/sqw/hp.sqw?k=1301
   colnames(typ_organu)<-c("id_typ_org",
@@ -155,6 +161,6 @@ download_poslanci<-function() {
                           "nazev_typ_org_en",
                           "typ_org_obecny",
                           "priorita")
-  
+  typ_organu<<-typ_organu #make global
   return()
 }
